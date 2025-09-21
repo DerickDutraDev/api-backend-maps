@@ -1,9 +1,11 @@
-// src/App.jsx
 import { useState } from 'react';
 import SearchBar from './components/SearchBar';
 import PharmacyList from './components/PharmacyList';
 import PharmacyDetails from './components/PharmacyDetails'; 
 import './App.css';
+
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
   const [pharmacies, setPharmacies] = useState([]);
@@ -12,28 +14,34 @@ function App() {
   const [selectedPharmacyDetails, setSelectedPharmacyDetails] = useState(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
 
-  
   const handleSearch = async () => {
     setLoading(true);
     setError(null);
     setPharmacies([]);
     setSelectedPharmacyDetails(null); 
-
+    
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
           
           try {
-            const response = await fetch(`/api/pharmacies?lat=${latitude}&lng=${longitude}`);
-            if (!response.ok) throw new Error('Erro na resposta do servidor.');
-            const data = await response.json();
-            setPharmacies(data);
-            setLoading(false);
+              // Adicionamos o timestamp para evitar o cache do navegador
+              const timestamp = new Date().getTime();
+              // Agora a URL usa a variável de ambiente para o backend
+              const response = await fetch(`${API_URL}/api/pharmacies?lat=${latitude}&lng=${longitude}&_t=${timestamp}`);
+
+              if (!response.ok) {
+                  throw new Error(`Erro na resposta do servidor: ${response.status}`);
+              }
+          
+              const data = await response.json();
+              setPharmacies(data);
+              setLoading(false);
           } catch (apiError) {
-            console.error('Erro na requisição da API:', apiError);
-            setLoading(false);
-            setError('Ocorreu um erro ao buscar as farmácias. Tente novamente.');
+              console.error('Erro na requisição da API:', apiError);
+              setLoading(false);
+              setError('Ocorreu um erro ao buscar as farmácias. Tente novamente.');
           }
         },
         (geoError) => {
@@ -54,9 +62,13 @@ function App() {
     setSelectedPharmacyDetails(null);
 
     try {
-      const response = await fetch(`/api/pharmacy-details?placeId=${placeId}`);
+      // Agora a URL usa a variável de ambiente para o backend
+      const response = await fetch(`${API_URL}/api/pharmacy-details?placeId=${placeId}`);
       if (!response.ok) throw new Error('Erro ao buscar detalhes da farmácia.');
-      const data = await response.json();
+      
+      // Corrigimos o erro de JSON vazio, verificando se a resposta tem conteúdo
+      const data = response.headers.get("content-length") === "0" ? {} : await response.json();
+      
       setSelectedPharmacyDetails(data);
       setDetailsLoading(false);
     } catch (apiError) {
