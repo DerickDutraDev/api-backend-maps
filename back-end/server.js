@@ -1,12 +1,14 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const axios = require('axios');
-const path = require('path');
+const cors = require('cors');
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(cors());
 
 app.get('/api/pharmacies', async (req, res) => {
   const { lat, lng } = req.query;
@@ -17,7 +19,7 @@ app.get('/api/pharmacies', async (req, res) => {
 
   try {
     const googleApiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=5000&type=pharmacy&key=${process.env.GOOGLE_PLACES_API_KEY}`;
-    
+
     const response = await axios.get(googleApiUrl);
     const pharmacies = response.data.results;
 
@@ -47,7 +49,7 @@ app.get('/api/pharmacy-details', async (req, res) => {
 
   try {
     const detailsApiUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,formatted_address,formatted_phone_number,website,opening_hours,weekday_text&key=${process.env.GOOGLE_PLACES_API_KEY}`;
-    
+
     const response = await axios.get(detailsApiUrl);
     const placeDetails = response.data.result;
 
