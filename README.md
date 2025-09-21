@@ -2,7 +2,7 @@
 
 Uma aplicação web completa para localizar farmácias perto de você, com **visual moderno** e informações detalhadas.
 
-### https://consumindo-api-lemon.vercel.app/
+
 ---
 
 ## ✨ Funcionalidades
