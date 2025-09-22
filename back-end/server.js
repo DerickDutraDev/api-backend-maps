@@ -10,6 +10,9 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 
+/**
+ * Buscar farmácias próximas
+ */
 app.get('/api/pharmacies', async (req, res) => {
   const { lat, lng } = req.query;
 
@@ -18,7 +21,7 @@ app.get('/api/pharmacies', async (req, res) => {
   }
 
   try {
-    const googleApiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=5000&type=pharmacy&key=${process.env.GOOGLE_PLACES_API_KEY_NEW}`;
+    const googleApiUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=5000&type=pharmacy&key=${process.env.GOOGLE_PLACES_API_KEY}`;
 
     const response = await axios.get(googleApiUrl);
     const pharmacies = response.data.results || [];
@@ -40,6 +43,9 @@ app.get('/api/pharmacies', async (req, res) => {
   }
 });
 
+/**
+ * Buscar detalhes de uma farmácia
+ */
 app.get('/api/pharmacy-details', async (req, res) => {
   const { placeId } = req.query;
 
