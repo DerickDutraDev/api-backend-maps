@@ -98,4 +98,4 @@ Copiar código
 ```
 👨‍💻 Desenvolvido por Derick Dutra, estudante de Ciência da Computação.
 
-https://consumindo-api-lemon.vercel.app/
+https://farmacia-amiga.netlify.app/
